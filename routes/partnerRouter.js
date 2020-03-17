@@ -1,11 +1,11 @@
 const express = require("express");
 
-const campsiteRouter = express.Router();
-campsiteRouter.use(express.json());
+const partnerRouter = express.Router();
+partnerRouter.use(express.json());
 
 // curl -X POST -v -H "Content-Type: application/json" -d "{"name":"value1", "description":"value2"}" http://localhost:3000/campsites/
 
-campsiteRouter.route("/").all((req, res, next) => {
+partnerRouter.route("/").all((req, res, next) => {
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/plain");
     next();
@@ -29,14 +29,14 @@ campsiteRouter.route("/").all((req, res, next) => {
 });
 
 
-campsiteRouter.route("/:campsiteId").all((req, res, next) => {
+partnerRouter.route("/:partnerId").all((req, res, next) => {
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/plain");
     next();
 })
 
 .get((req, res) => {
-    res.end(`Will send details of the campsite: ${req.params.campsiteId} to you`);
+    res.end(`Will send details of the partner: ${req.params.partnerId} to you`);
 })
 
 .post((req, res) => {
@@ -54,4 +54,4 @@ campsiteRouter.route("/:campsiteId").all((req, res, next) => {
 });
 
 
-module.exports = campsiteRouter;
+module.exports = partnerRouter;
