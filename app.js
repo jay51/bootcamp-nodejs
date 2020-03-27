@@ -13,6 +13,9 @@ var promotionRouter     = require("./routes/promotionRouter");
 var partnerRouter       = require("./routes/partnerRouter");
 const session = require("express-session");
 const fileStore = require("session-file-store")(session);
+const passport = require("passport");
+const authenticate = require("./authenticate");
+
 
 
 
@@ -34,20 +37,15 @@ var app = express();
 
 function auth(req, res, next){
     console.log("SESSION:", req.session);
+    console.log("User:", req.user);
 
-    if(!req.session.user){
+    if(!req.user){
         const err = new Error("You are not authenticated!");
         err.status = 401;
         return next(err);
     }
 
-    if(req.session.user === "authenticated"){
-        return next();
-    }
-
-    const err = Error("You are not authenticated!");
-    err.status = 401;
-    return next(err);
+    return next();
 }
 
 
@@ -59,10 +57,6 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser("12345-67890-09876-54321"));
-// invoking the session will return a function that will set the session obj on every request
-// so every time a user make a request, express is gonig to call that function and not session({...})
-// the session name will be what you set the name prop to and the session function will look for that cookie to know what session is
 app.use(session({
     name: "session-id",
     secret: "12345-67890-09876-54321",
@@ -72,6 +66,10 @@ app.use(session({
 }));
 
 app.use(express.static(path.join(__dirname, "public")));
+
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
