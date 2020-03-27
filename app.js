@@ -11,6 +11,9 @@ var usersRouter         = require("./routes/users");
 var campsiteRouter      = require("./routes/campsiteRouter");
 var promotionRouter     = require("./routes/promotionRouter");
 var partnerRouter       = require("./routes/partnerRouter");
+const session = require("express-session");
+const fileStore = require("session-file-store")(session);
+
 
 
 
@@ -30,10 +33,11 @@ var app = express();
 
 
 function auth(req, res, next){
-    console.log(req.headers)
+    console.log("HEADERS:", req.headers);
+    console.log("SESSION:", req.session);
 
     // check for signed cookie (if no cookie check for auth header)
-    if(!req.signedCookies.user){
+    if(!req.session.user){
         const authHeader = req.headers.authorization;
         if(!authHeader){
             const err = new Error("You are not authenticated!");
@@ -47,7 +51,7 @@ function auth(req, res, next){
         const user = auth[0]
         const pass = auth[1]
         if(user === "admin" && pass === "password"){
-             res.cookie("user", "admin", {signed: true});
+             req.session.user = "admin";
             return next(); //authorized
 
         } else{
@@ -59,7 +63,7 @@ function auth(req, res, next){
 
     } else {
         console.log("ok you have a cookie");
-        if(req.signedCookies.user === "admin"){
+        if(req.session.user === "admin"){
             return next();
         }
 
@@ -78,7 +82,18 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser("12345-67890-09876-54321"));
+// app.use(cookieParser("12345-67890-09876-54321"));
+// invoking the session will return a function that will set the session obj on every request
+// so every time a user make a request, express is gonig to call that function and not session({...})
+// the session name will be what you set the name prop to and the session function will look for that cookie to know what session is
+app.use(session({
+    name: "session-id",
+    secret: "12345-67890-09876-54321",
+    saveUninitialized: false,
+    resave: false,
+    store: new fileStore()
+}));
+
 app.use(auth)
 app.use(express.static(path.join(__dirname, "public")));
 
