@@ -14,18 +14,33 @@ router.post("/signup", function(req, res, next) {
     User.register(
         new User({username: req.body.username}),
         req.body.password,
-        (err) => {
+        (err, user) => {
             if (err){
                 err.status = 500;
                 res.setHeader("Content-Type", "application/json");
                 return res.json({err});
 
             } else{
+                if(req.body.firstname){
+                    user.firstname = req.body.firstname;
+                }
 
+                if(req.body.lastname){
+                    user.lastname = req.body.lastname;
+                }
+
+                user.save( err => {
+                    if(err){
+                        res.statusCode = 500;
+                        res.setHeader("Content-Type", "application/json");
+                        return res.json({err: err});
+                    }
+                });
                 passport.authenticate("local")(req, res, () => {
                     res.statusCode = 200;
                     res.setHeader("Content-Type", "application/json");
-                    res.json({success: true, status: "Registration Successful!"});
+                    // const token = authenticate.getToken({_id: req.user._id}) should you give the use a token when signup ? up to you
+                    res.json({success: true, token, status: "Registration Successful!"});
                 });
             }
     })
