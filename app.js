@@ -15,13 +15,15 @@ const session = require("express-session");
 const fileStore = require("session-file-store")(session);
 const passport = require("passport");
 const authenticate = require("./authenticate");
+const config = require("./config");
 
 
 
 
 
 
-const url = "mongodb://localhost:27017/nucampsite";
+// const url = "mongodb://localhost:27017/nucampsite";
+const url = config.mongoUrl
 const conn = mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
