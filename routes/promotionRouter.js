@@ -16,7 +16,7 @@ promotionRouter.route("/").all((req, res, next) => {
     res.end("Will send all the campsites to you");
 })
 
-.post(authenticate.verifyUser, (req, res) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end(`Will add the campsite: ${req.body.name} with description: ${req.body.description}`);
 })
 
@@ -25,7 +25,7 @@ promotionRouter.route("/").all((req, res, next) => {
     res.end("PUT operation not supported on /campsites");
 })
 
-.delete(authenticate.verifyUser, (req, res) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("Deleting all campsites");
 });
 
@@ -44,13 +44,13 @@ promotionRouter.route("/:promotionId").all((req, res, next) => {
     res.end(`Will add the campsite: ${req.body.name} with description: ${req.body.description}`);
 })
 
-.put(authenticate.verifyUser, (req, res) => {
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.write(`Updating the campsite: ${req.params.campsiteId}\n`);
     res.end(`Will update the campsite: ${req.body.name}
     with description: ${req.body.description}`);
 })
 
-.delete(authenticate.verifyUser, (req, res) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("Deleting all campsites");
 });
 

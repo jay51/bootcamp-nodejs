@@ -5,8 +5,14 @@ const passport = require("passport");
 const authenticate = require("../authenticate");
 
 /* GET users listing. */
-router.get("/", function(req, res, next) {
-  res.send("respond with a resource");
+// router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+router.get("/", (req, res, next) => {
+  User.find()
+  .then(users =>{
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        return res.json(users);
+  });
 });
 
 
@@ -39,8 +45,7 @@ router.post("/signup", function(req, res, next) {
                 passport.authenticate("local")(req, res, () => {
                     res.statusCode = 200;
                     res.setHeader("Content-Type", "application/json");
-                    // const token = authenticate.getToken({_id: req.user._id}) should you give the use a token when signup ? up to you
-                    res.json({success: true, token, status: "Registration Successful!"});
+                    res.json({success: true, status: "Registration Successful!"});
                 });
             }
     })
