@@ -5,8 +5,8 @@ const passport = require("passport");
 const authenticate = require("../authenticate");
 
 /* GET users listing. */
-// router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-router.get("/", (req, res, next) => {
+router.get("/", authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+// router.get("/", (req, res, next) => {
   User.find()
   .then(users =>{
         res.statusCode = 200;

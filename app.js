@@ -11,10 +11,7 @@ var usersRouter         = require("./routes/users");
 var campsiteRouter      = require("./routes/campsiteRouter");
 var promotionRouter     = require("./routes/promotionRouter");
 var partnerRouter       = require("./routes/partnerRouter");
-const session = require("express-session");
-const fileStore = require("session-file-store")(session);
 const passport = require("passport");
-const authenticate = require("./authenticate");
 const config = require("./config");
 
 
@@ -37,21 +34,6 @@ var app = express();
 
 
 
-function auth(req, res, next){
-    console.log("SESSION:", req.session);
-    console.log("User:", req.user);
-
-    if(!req.user){
-        const err = new Error("You are not authenticated!");
-        err.status = 401;
-        return next(err);
-    }
-
-    return next();
-}
-
-
-
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
@@ -59,23 +41,13 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(session({
-    name: "session-id",
-    secret: "12345-67890-09876-54321",
-    saveUninitialized: false,
-    resave: false,
-    store: new fileStore()
-}));
-
 app.use(express.static(path.join(__dirname, "public")));
 
-
 app.use(passport.initialize());
-app.use(passport.session());
+
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use(auth)
 app.use("/campsites", campsiteRouter);
 app.use("/promotions", promotionRouter);
 app.use("/partners", partnerRouter);
